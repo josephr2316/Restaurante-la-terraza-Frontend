@@ -225,6 +225,9 @@ async function refreshMetadata() {
     state.tables = [];
     renderAreasAndTables();
     renderMetrics();
+    if (error.message && (error.message.includes('seed') || error.message.includes('503'))) {
+      showToast('Haz clic en "Cargar seed" (arriba) para cargar áreas y mesas.', 'err');
+    }
     return false;
   }
 }
@@ -431,7 +434,7 @@ async function init() {
     await refreshReservations();
   } else {
     setChip(els.serverStatus, 'API: disponible, falta seed', false);
-    els.reservationsContainer.textContent = 'Cargar seed para operar.';
+    els.reservationsContainer.textContent = 'Haz clic en el botón "Cargar seed" (arriba a la derecha) para cargar áreas y mesas.';
   }
 }
 
