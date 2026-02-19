@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>La Terraza | Control de Reservas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="surface surface-a"></div>
+  <div class="surface surface-b"></div>
+
+  <header class="top">
+    <div>
+      <p class="kicker">La Terraza</p>
+      <h1>Control de Reservas</h1>
+      <p class="subtitle">Panel operativo para anfitrion y administracion.</p>
+    </div>
+    <div class="top-actions">
+      <input id="auth-token" class="token-input" placeholder="Bearer token (opcional)" />
+      <button id="save-token" class="btn btn-light" type="button">Guardar token</button>
+      <button id="seed-btn" class="btn btn-accent">Cargar seed</button>
+      <button id="refresh-all" class="btn btn-light">Actualizar panel</button>
+      <a class="btn btn-ghost" href="/docs/" target="_blank" rel="noopener">Swagger</a>
+    </div>
+  </header>
+
+  <section class="status-strip">
+    <div id="seed-status" class="chip chip-neutral">Seed: pendiente</div>
+    <div id="server-status" class="chip chip-neutral">API: verificando...</div>
+    <div id="clock" class="chip chip-neutral">--:--:--</div>
+  </section>
+
+  <main class="dashboard">
+    <section class="card metrics">
+      <h2>Resumen del dia</h2>
+      <div class="metric-grid">
+        <article>
+          <span>Areas</span>
+          <strong id="metric-areas">0</strong>
+        </article>
+        <article>
+          <span>Mesas</span>
+          <strong id="metric-tables">0</strong>
+        </article>
+        <article>
+          <span>Reservas hoy</span>
+          <strong id="metric-reservations">0</strong>
+        </article>
+        <article>
+          <span>Pendientes</span>
+          <strong id="metric-pending">0</strong>
+        </article>
+      </div>
+    </section>
+
+    <section class="card" id="availability-panel">
+      <h2>Disponibilidad</h2>
+      <form id="availability-form" class="form-grid">
+        <label>Fecha<input type="date" name="date" required /></label>
+        <label>Hora<input type="time" name="startTime" required /></label>
+        <label>Personas<input type="number" name="partySize" min="1" required /></label>
+        <label>Duracion
+          <select name="durationMin">
+            <option value="90">90 min</option>
+            <option value="120">120 min</option>
+            <option value="180">180 min</option>
+          </select>
+        </label>
+        <label>Preferencia
+          <select name="areaPreference">
+            <option>ANY</option><option>VIP</option><option>TERRACE</option><option>PATIO</option><option>LOBBY</option><option>BAR</option>
+          </select>
+        </label>
+        <button class="btn btn-accent" type="submit">Consultar</button>
+      </form>
+      <div id="availability-result" class="availability-result">Sin consulta.</div>
+    </section>
+
+    <section class="card" id="reservation-panel">
+      <h2>Nueva reserva</h2>
+      <p class="hint">Tip: puedes usar "Enviar a reserva" desde resultados de disponibilidad para autocompletar.</p>
+      <form id="reservation-form" class="form-grid">
+        <label>Fecha<input type="date" name="date" required /></label>
+        <label>Hora<input type="time" name="startTime" required /></label>
+        <label>Personas<input type="number" name="partySize" min="1" required /></label>
+        <label>Duracion
+          <select name="durationMin">
+            <option value="90">90 min</option>
+            <option value="120">120 min</option>
+            <option value="180">180 min</option>
+          </select>
+        </label>
+        <label>Preferencia
+          <select name="areaPreference">
+            <option>ANY</option><option>VIP</option><option>TERRACE</option><option>PATIO</option><option>LOBBY</option><option>BAR</option>
+          </select>
+        </label>
+        <label>VIP solicitado
+          <select name="vipRequested">
+            <option value="false">No</option>
+            <option value="true">Si</option>
+          </select>
+        </label>
+        <label>Cliente<input name="customerName" required /></label>
+        <label>Telefono<input name="phone" required /></label>
+        <label>Email<input type="email" name="email" placeholder="opcional" /></label>
+        <label>Ocasion
+          <select name="occasion">
+            <option>NONE</option><option>BIRTHDAY</option><option>ANNIVERSARY</option><option>OTHER</option>
+          </select>
+        </label>
+        <label>Origen
+          <select name="source" required>
+            <option>WEB</option><option>WHATSAPP</option><option>INSTAGRAM</option><option>WALKIN</option>
+          </select>
+        </label>
+        <label>Mesa asignada (id)
+          <input name="assignedTableId" placeholder="opcional" />
+        </label>
+        <label class="full">Notas<textarea rows="2" name="notes" placeholder="opcional"></textarea></label>
+        <button class="btn btn-accent" type="submit">Crear reserva</button>
+      </form>
+      <pre id="reservation-result" class="console">Sin reservas creadas.</pre>
+    </section>
+
+    <section class="card" id="reservations-panel">
+      <h2>Reservas</h2>
+      <form id="list-form" class="form-inline">
+        <label>Fecha<input type="date" name="date" required /></label>
+        <label>Area ID<input name="areaId" placeholder="opcional" /></label>
+        <button class="btn btn-light" type="submit">Buscar</button>
+      </form>
+      <div id="reservations-container" class="reservations-list"></div>
+    </section>
+
+    <section class="card" id="admin-panel">
+      <h2>Catalogo de areas y mesas</h2>
+      <div class="split">
+        <div>
+          <h3>Areas</h3>
+          <ul id="areas-list" class="list"></ul>
+        </div>
+        <div>
+          <h3>Mesas</h3>
+          <ul id="tables-list" class="list"></ul>
+        </div>
+      </div>
+      <form id="add-table-form" class="form-inline bottom-gap">
+        <label>Area
+          <select name="areaId" id="area-select" required></select>
+        </label>
+        <label>Capacidad
+          <select name="capacity" required>
+            <option value="2">2</option><option value="4">4</option><option value="6">6</option><option value="8">8</option><option value="10">10</option>
+          </select>
+        </label>
+        <label>Tipo
+          <select name="tableType" required>
+            <option>STANDARD</option><option>VIP_ROUND</option><option>VIP_SQUARE</option>
+          </select>
+        </label>
+        <label>Codigo
+          <input name="code" placeholder="opcional" />
+        </label>
+        <button class="btn btn-light" type="submit">Agregar mesa</button>
+      </form>
+      <pre id="admin-result" class="console">Sin cambios.</pre>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
