@@ -24,24 +24,17 @@ npm run build
 
 Genera la carpeta `dist/` lista para servir estáticamente.
 
-## Preview del build
+## Deployment en Vercel
 
-```bash
-npm run preview
-```
+1. Entra en [vercel.com](https://vercel.com) y conecta el repo **Restaurante-la-terraza-Frontend**.
+2. **Root Directory**: pon `Restaurant app` (o la carpeta donde está este `package.json`).
+3. **Build Command**: `npm run build`
+4. **Output Directory**: `dist`
+5. Despliega. Vercel usará el `vercel.json` del proyecto para el redirect SPA (todas las rutas → `index.html`).
 
-## Deployment
-
-El proyecto está listo para desplegar en:
-
-- **Vercel**: conectar el repo, raíz del proyecto = `Restaurant app` (o la carpeta donde esté este `package.json`). Build: `npm run build`, Output: `dist`. Usa `vercel.json` para SPA.
-- **Netlify**: conectar el repo, raíz = `Restaurant app`. Usa `netlify.toml` (comando y redirects ya configurados).
-- **Otros estáticos**: ejecutar `npm run build` y publicar el contenido de `dist/`.
+No hace falta configurar variables de entorno para la API; la URL está en el código.
 
 ## API
 
-Base URL: `https://restaurante-la-terraza-production.up.railway.app`
-
-Endpoints: ver `API_ENDPOINTS_TEST_RESULTS.md` para la lista probada.
-
-Token por defecto en la app: `Bearer test` (configurable en el panel).
+Base URL: `https://restaurante-la-terraza-production.up.railway.app`  
+Endpoints: ver `API_ENDPOINTS_TEST_RESULTS.md`. Token por defecto en la app: `Bearer test`.
